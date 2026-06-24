@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CA Prompt Engineering &middot; User Manual</title>
+<meta name="description" content="The practitioner's user manual for CA Prompt Engineering, the Custom GPT for Indian Chartered Accountants. Navigation, plain-language prompting and reading the structured output." />
+<meta name="theme-color" content="#0A1A2F" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy-950:#06121F;
+    --navy-900:#0A1A2F;
+    --navy-850:#0E2138;
+    --navy-800:#122a47;
+    --navy-700:#173458;
+    --ink:#ECF1F8;
+    --slate:#9DB0CB;
+    --slate-dim:#6E83A2;
+    --paper:#F8F5EC;
+    --paper-2:#FBF9F2;
+    --paper-ink:#16263F;
+    --paper-muted:#54627A;
+    --gold:#C8A24A;
+    --gold-bright:#E7C871;
+    --gold-deep:#9C7A2E;
+    --rust:#B4622E;
+    --line:rgba(200,162,74,.22);
+    --line-soft:rgba(157,176,203,.16);
+    --paper-line:rgba(22,38,63,.12);
+    --shadow:0 30px 70px rgba(3,9,18,.55);
+    --shadow-paper:0 22px 50px rgba(4,12,24,.40);
+    --max:1140px;
+    --r:18px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    color:var(--ink);
+    background:
+      radial-gradient(900px 520px at 84% -6%, rgba(200,162,74,.14), transparent 60%),
+      radial-gradient(820px 560px at 6% 4%, rgba(23,52,88,.55), transparent 62%),
+      linear-gradient(180deg,#06101C 0%, var(--navy-900) 38%, var(--navy-950) 100%);
+    background-attachment:fixed;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* faint gold grid wash */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(200,162,74,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,162,74,.05) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(circle at 50% 22%, #000, transparent 78%);
+    opacity:.5;
+  }
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  svg{display:block;}
+
+  .wrap{width:min(100%,var(--max));margin:0 auto;padding:0 26px;position:relative;z-index:1;}
+
+  /* ---------- top bar ---------- */
+  .top{position:sticky;top:0;z-index:60;background:rgba(8,18,31,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .top-in{width:min(100%,var(--max));margin:0 auto;padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:18px;}
+  .brand{display:flex;align-items:center;gap:13px;min-width:0;}
+  .seal{width:42px;height:42px;flex:none;}
+  .brand b{font-family:Fraunces,serif;font-weight:600;font-size:1.02rem;letter-spacing:.01em;display:block;line-height:1;}
+  .brand span{display:block;margin-top:3px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);}
+  .top-nav{display:flex;align-items:center;gap:4px;}
+  .top-nav a{font-size:.82rem;color:var(--slate);padding:9px 11px;border-radius:999px;transition:.2s color,.2s background;}
+  .top-nav a:hover{color:var(--ink);background:rgba(200,162,74,.10);}
+  .cta{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:.86rem;color:var(--navy-950);
+    background:linear-gradient(135deg,var(--gold-bright),var(--gold) 60%,var(--gold-deep));
+    border:1px solid rgba(231,200,113,.6);border-radius:999px;padding:11px 18px;white-space:nowrap;
+    box-shadow:0 12px 30px rgba(200,162,74,.28);transition:.2s transform,.2s box-shadow;cursor:pointer;}
+  .cta:hover{transform:translateY(-1px);box-shadow:0 16px 38px rgba(200,162,74,.38);}
+  .cta svg{width:15px;height:15px;}
+  @media(max-width:880px){.top-nav{display:none;}}
+
+  /* ---------- hero ---------- */
+  .hero{padding:74px 0 30px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;}
+  .eyebrow::before{content:"";width:30px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+  .hero h1{font-family:Fraunces,serif;font-weight:600;font-size:clamp(2.5rem,6vw,4.3rem);line-height:1.02;letter-spacing:-.02em;margin:0 0 22px;}
+  .hero h1 em{font-style:italic;color:var(--gold-bright);}
+  .lede{font-size:clamp(1.05rem,1.7vw,1.28rem);color:var(--slate);max-width:42ch;margin:0 0 30px;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:46px;align-items:center;}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:34px;}}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+  .chip{font-size:.78rem;color:var(--ink);border:1px solid var(--line);background:rgba(200,162,74,.06);border-radius:999px;padding:7px 13px;}
+  .chip b{color:var(--gold-bright);font-weight:600;}
+
+  /* hero signature: ask -> report */
+  .signature{position:relative;}
+  .sig-card{background:linear-gradient(160deg,var(--navy-800),var(--navy-850));border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);overflow:hidden;}
+  .sig-head{display:flex;align-items:center;gap:9px;padding:13px 16px;border-bottom:1px solid var(--line-soft);font-size:.78rem;color:var(--slate);}
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .sig-body{padding:16px;}
+  .ask{font-family:"IBM Plex Mono",monospace;font-size:.84rem;color:var(--ink);background:rgba(6,18,31,.6);border:1px solid var(--line-soft);
+    border-radius:12px;padding:13px 14px;line-height:1.5;}
+  .ask .cursor{display:inline-block;width:8px;height:1.05em;background:var(--gold-bright);margin-left:2px;vertical-align:-2px;animation:blink 1.1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .arrow-down{display:flex;justify-content:center;color:var(--gold);margin:12px 0;}
+  .arrow-down svg{width:20px;height:20px;}
+  .report-mini{background:var(--paper);color:var(--paper-ink);border-radius:12px;padding:14px;font-size:.8rem;}
+  .report-mini .rh{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.74rem;color:var(--gold-deep);padding-bottom:9px;border-bottom:1px solid var(--paper-line);margin-bottom:10px;}
+  .report-mini .rl{display:flex;gap:8px;margin:6px 0;color:var(--paper-muted);}
+  .report-mini .rl b{color:var(--paper-ink);font-weight:600;}
+  .tag{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.04em;color:var(--gold-deep);background:rgba(200,162,74,.14);
+    border:1px solid rgba(200,162,74,.3);border-radius:6px;padding:2px 7px;}
+
+  /* ---------- chapters ---------- */
+  .chapter{padding:62px 0;border-top:1px solid var(--line-soft);}
+  .ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;}
+  .chapter.flip .ch-art{order:2;}
+  @media(max-width:920px){.ch-grid{grid-template-columns:1fr;gap:34px;}.chapter.flip .ch-art{order:0;}}
+
+  .ch-num{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+  .numseal{width:52px;height:52px;flex:none;}
+  .ch-num .label{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+  .ch-title{font-family:Fraunces,serif;font-weight:600;font-size:clamp(1.7rem,3.2vw,2.35rem);line-height:1.08;letter-spacing:-.015em;margin:0 0 16px;}
+  .ch-lead{color:var(--slate);font-size:1.02rem;margin:0 0 22px;max-width:48ch;}
+
+  .art-frame{background:linear-gradient(165deg,var(--navy-800),var(--navy-850) 70%,var(--navy-900));
+    border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .art-frame::after{content:"";position:absolute;inset:0;background:radial-gradient(420px 200px at 80% -10%,rgba(200,162,74,.12),transparent 70%);pointer-events:none;}
+  .art-frame svg{width:100%;height:auto;position:relative;}
+
+  /* note / list components on navy */
+  .steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;}
+  .steps li{display:flex;gap:14px;}
+  .step-no{width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;
+    font-size:.86rem;font-weight:600;color:var(--gold-bright);background:rgba(200,162,74,.10);border:1px solid var(--line);}
+  .step-bd{flex:1;}
+  .step-bd b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px;}
+  .step-bd span{color:var(--slate);font-size:.94rem;}
+
+  .keyline{border-left:2px solid var(--gold);padding:4px 0 4px 16px;margin:22px 0;color:var(--slate);font-size:.96rem;}
+  .keyline b{color:var(--gold-bright);font-weight:600;}
+
+  /* type-this input block */
+  .typeblk{margin:18px 0;}
+  .typeblk .tt{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .typeline{display:flex;align-items:center;gap:10px;background:rgba(6,18,31,.66);border:1px solid var(--line);border-radius:12px;padding:11px 14px;}
+  .typeline code{font-family:"IBM Plex Mono",monospace;font-size:.86rem;color:var(--ink);flex:1;}
+  .copy{flex:none;font-size:.7rem;letter-spacing:.08em;color:var(--gold);background:rgba(200,162,74,.10);border:1px solid var(--line);
+    border-radius:8px;padding:6px 10px;cursor:pointer;transition:.18s;font-family:inherit;}
+  .copy:hover{background:rgba(200,162,74,.2);color:var(--gold-bright);}
+
+  /* paper card (reading surfaces inside navy) */
+  .paper{background:linear-gradient(180deg,var(--paper-2),var(--paper));color:var(--paper-ink);border-radius:16px;
+    padding:20px 22px;box-shadow:var(--shadow-paper);border:1px solid rgba(255,255,255,.5);}
+  .paper h4{font-family:Fraunces,serif;font-weight:600;font-size:1.05rem;margin:0 0 12px;color:var(--paper-ink);}
+  .paper .row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--paper-line);font-size:.92rem;}
+  .paper .row:last-child{border-bottom:0;}
+  .paper .row span{color:var(--paper-muted);}
+  .paper .row b{color:var(--paper-ink);font-weight:600;text-align:right;}
+
+  /* domain grid */
+  .domgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:6px;}
+  @media(max-width:920px){.domgrid{grid-template-columns:repeat(5,1fr);}}
+  @media(max-width:520px){.domgrid{grid-template-columns:repeat(3,1fr);}}
+  .dom{border:1px solid var(--line);background:rgba(200,162,74,.05);border-radius:12px;padding:12px 10px;text-align:center;transition:.2s;}
+  .dom:hover{background:rgba(200,162,74,.12);transform:translateY(-2px);}
+  .dom b{display:block;font-family:"IBM Plex Mono",monospace;color:var(--gold-bright);font-size:.92rem;}
+  .dom span{font-size:.7rem;color:var(--slate);}
+
+  /* will / wont */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+  @media(max-width:560px){.twocol{grid-template-columns:1fr;}}
+  .col{border:1px solid var(--line-soft);border-radius:14px;padding:16px 18px;background:rgba(255,255,255,.02);}
+  .col h5{margin:0 0 12px;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;}
+  .col.will h5{color:var(--gold-bright);}
+  .col.wont h5{color:var(--slate-dim);}
+  .col ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;}
+  .col li{font-size:.92rem;color:var(--slate);display:flex;gap:9px;align-items:flex-start;}
+  .col li svg{width:15px;height:15px;flex:none;margin-top:3px;}
+
+  /* commands table */
+  .cmd{display:grid;gap:8px;}
+  .cmd-row{display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line-soft);}
+  .cmd-row:last-child{border-bottom:0;}
+  .cmd-row code{font-family:"IBM Plex Mono",monospace;font-size:.84rem;color:var(--gold-bright);}
+  .cmd-row span{color:var(--slate);font-size:.92rem;}
+  @media(max-width:560px){.cmd-row{grid-template-columns:1fr;gap:3px;}}
+
+  /* final cta band */
+  .final{padding:70px 0 30px;text-align:center;}
+  .final h2{font-family:Fraunces,serif;font-weight:600;font-size:clamp(1.9rem,4vw,2.8rem);letter-spacing:-.015em;margin:0 auto 16px;max-width:18ch;}
+  .final p{color:var(--slate);max-width:46ch;margin:0 auto 28px;}
+  .quickstart{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:780px;margin:0 auto 34px;text-align:left;}
+  @media(max-width:680px){.quickstart{grid-template-columns:1fr;}}
+  .qs{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:rgba(200,162,74,.05);}
+  .qs b{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:600;margin-bottom:7px;}
+  .qs b i{font-family:"IBM Plex Mono",monospace;font-style:normal;color:var(--gold-bright);}
+  .qs span{color:var(--slate);font-size:.9rem;}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:34px 0 50px;}
+  .foot-in{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center;}
+  .foot-in .fb{display:flex;align-items:center;gap:12px;}
+  .foot-in small{color:var(--slate-dim);font-size:.78rem;line-height:1.7;display:block;}
+  .foot-in a{color:var(--gold);}
+  .disclaim{margin-top:20px;padding-top:18px;border-top:1px solid var(--line-soft);color:var(--slate-dim);font-size:.78rem;max-width:90ch;}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
+    background:var(--gold);color:var(--navy-950);font-weight:600;font-size:.82rem;padding:10px 18px;border-radius:999px;
+    box-shadow:0 12px 30px rgba(200,162,74,.4);transition:.25s;z-index:80;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease;}
+  .rv.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .rv{opacity:1;transform:none;transition:none;}
+    .ask .cursor{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#top" aria-label="Aggarwal Samir and Co home">
+      <svg class="seal" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="22" fill="none" stroke="#C8A24A" stroke-width="1.4"/>
+        <circle cx="24" cy="24" r="17" fill="none" stroke="rgba(200,162,74,.45)" stroke-width="1"/>
+        <text x="24" y="29" text-anchor="middle" font-family="Fraunces,serif" font-size="15" font-weight="600" fill="#E7C871">CA</text>
+      </svg>
+      <span class="brand"><b>CA Prompt Engineering</b><span>Aggarwal Samir &amp; Co.</span></span>
+    </a>
+    <nav class="top-nav" aria-label="Manual sections">
+      <a href="#orient">What it is</a>
+      <a href="#screen">The screen</a>
+      <a href="#method">How to use</a>
+      <a href="#ask">How to ask</a>
+      <a href="#library">The library</a>
+      <a href="#report">The report</a>
+    </nav>
+    <a class="cta" id="openGpt" href="https://chatgpt.com/g/g-6a2d9243b104819187c16daf5be738c2-ca-prompt-engineering" target="_blank" rel="noopener">
+      Open the GPT
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+<div class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="rv">
+        <span class="eyebrow">Practitioner's User Manual &middot; v2.0</span>
+        <h1>No prompts to learn.<br><em>Just your raw thought.</em></h1>
+        <p class="lede">CA Prompt Engineering is your firm's Custom GPT. You describe a task in plain words. It returns a copy-ready, law-grounded CA draft. This manual shows you exactly how.</p>
+        <div class="hero-meta">
+          <span class="chip"><b>114</b> ready prompts</span>
+          <span class="chip"><b>10</b> practice domains</span>
+          <span class="chip">Grounded in the <b>bare Acts</b></span>
+        </div>
+      </div>
+
+      <div class="signature rv">
+        <div class="sig-card">
+          <div class="sig-head">
+            <span class="dot" style="background:#E66"></span>
+            <span class="dot" style="background:#E7C871"></span>
+            <span class="dot" style="background:#7FB77E"></span>
+            <span style="margin-left:6px;">CA Prompt Engineering</span>
+          </div>
+          <div class="sig-body">
+            <div class="ask">Draft a reply to a 143(1) notice for a salaried client, AY 2025-26<span class="cursor"></span></div>
+            <div class="arrow-down" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+            </div>
+            <div class="report-mini">
+              <div class="rh">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9C7A2E" stroke-width="2"><path d="M5 3h11l3 3v15H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+                ADV-3 &middot; Intimation Response Pack
+              </div>
+              <div class="rl"><b>Draft email</b> to client, subject and body, copy-ready</div>
+              <div class="rl"><b>Document request</b> list, grouped by source</div>
+              <div class="rl"><span class="tag">VERIFY</span> rates, due dates, section refs flagged</div>
+              <div class="rl"><span class="tag">WHAT NEXT</span> Run QC-1 &middot; WhatsApp &middot; Chain</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 ORIENTATION ============ -->
+  <section class="chapter" id="orient">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- ENGINE GROUNDED IN LAW -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="A processing core reading the bare Acts and producing CA drafts">
+            <defs>
+              <linearGradient id="g-gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#E7C871"/><stop offset="1" stop-color="#9C7A2E"/>
+              </linearGradient>
+              <linearGradient id="g-paper" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FBF9F2"/><stop offset="1" stop-color="#E9E2CE"/>
+              </linearGradient>
+            </defs>
+            <!-- books base -->
+            <g transform="translate(150,250)">
+              <rect x="0" y="60" width="160" height="20" rx="3" fill="url(#g-paper)" stroke="#9C7A2E" stroke-width="1"/>
+              <rect x="8" y="40" width="144" height="20" rx="3" fill="url(#g-paper)" stroke="#9C7A2E" stroke-width="1"/>
+              <rect x="16" y="20" width="128" height="20" rx="3" fill="url(#g-paper)" stroke="#9C7A2E" stroke-width="1"/>
+              <text x="80" y="34" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#54627A">INCOME-TAX ACT 1961 &middot; 2025</text>
+              <text x="80" y="54" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#54627A">CGST / IGST &middot; COMPANIES &middot; LLP</text>
+            </g>
+            <!-- scan lines up into core -->
+            <g stroke="#C8A24A" stroke-width="1.2" opacity=".55">
+              <path d="M210 250 L230 168" stroke-dasharray="3 4"/>
+              <path d="M230 250 L230 168" stroke-dasharray="3 4"/>
+              <path d="M250 250 L230 168" stroke-dasharray="3 4"/>
+            </g>
+            <!-- core -->
+            <g transform="translate(230,128)">
+              <circle r="46" fill="none" stroke="#173458" stroke-width="10"/>
+              <circle r="46" fill="none" stroke="url(#g-gold)" stroke-width="2.4"/>
+              <circle r="30" fill="rgba(200,162,74,.10)" stroke="rgba(200,162,74,.5)" stroke-width="1"/>
+              <text y="6" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">CA</text>
+              <!-- ticks -->
+              <g stroke="#E7C871" stroke-width="2" stroke-linecap="round">
+                <path d="M0 -46 v8"/><path d="M0 46 v-8"/><path d="M-46 0 h8"/><path d="M46 0 h-8"/>
+              </g>
+            </g>
+            <!-- output cards -->
+            <g stroke="#C8A24A" stroke-width="1.2" opacity=".5">
+              <path d="M195 100 L96 70" stroke-dasharray="3 4"/>
+              <path d="M265 100 L364 70" stroke-dasharray="3 4"/>
+              <path d="M230 84 L230 44" stroke-dasharray="3 4"/>
+            </g>
+            <g font-family="IBM Plex Mono,monospace" font-size="9" fill="#06121F">
+              <g transform="translate(40,30)"><rect width="112" height="40" rx="8" fill="url(#g-paper)" stroke="#9C7A2E"/><text x="12" y="17">Client email</text><text x="12" y="31" fill="#54627A">subject + body</text></g>
+              <g transform="translate(174,8)"><rect width="112" height="40" rx="8" fill="url(#g-paper)" stroke="#9C7A2E"/><text x="12" y="17">Checklist</text><text x="12" y="31" fill="#54627A">numbered, file-ready</text></g>
+              <g transform="translate(308,30)"><rect width="112" height="40" rx="8" fill="url(#g-paper)" stroke="#9C7A2E"/><text x="12" y="17">File note</text><text x="12" y="31" fill="#54627A">CA technical</text></g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">01</text></svg>
+          <span class="label">Orientation</span>
+        </div>
+        <h2 class="ch-title">A CA colleague, not a chatbot.</h2>
+        <p class="ch-lead">CA Prompt Engineering is a Custom GPT built for an Indian practice. It thinks in AY cycles, TDS quarters, GST closes and MCA filings. The difference from a general chatbot is not tone. It is the source it reasons from.</p>
+        <div class="twocol">
+          <div class="col will">
+            <h5>This assistant</h5>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#E7C871" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>Reasons from the bare Acts and Rules loaded into it</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#E7C871" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>Flags every rate, threshold and due date to verify</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#E7C871" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>Runs 114 ready prompts for you, you write none</li>
+            </ul>
+          </div>
+          <div class="col wont">
+            <h5>A general chatbot</h5>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#6E83A2" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Answers from memory that goes stale after each Budget</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#6E83A2" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>States sections and rates confidently, even when wrong</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#6E83A2" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Hands you a blank box and asks you to engineer prompts</li>
+            </ul>
+          </div>
+        </div>
+        <p class="keyline">An honest limit: grounding in primary law sharply reduces wrong sections and rates. It does not make the tool infallible. <b>Every output stays a draft for your review.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 THE SCREEN ============ -->
+  <section class="chapter flip" id="screen">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- ANNOTATED LANDING SCREEN -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="Annotated map of the CA Prompt Engineering landing screen">
+            <defs>
+              <linearGradient id="screenbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F2"/><stop offset="1" stop-color="#F1ECDD"/></linearGradient>
+            </defs>
+            <rect x="40" y="20" width="380" height="340" rx="14" fill="url(#screenbg)" stroke="#9C7A2E" stroke-width="1"/>
+            <!-- top left gpt name + dropdown -->
+            <text x="58" y="48" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#16263F">CA Prompt Engineering</text>
+            <path d="M188 43 l5 5 5-5" fill="none" stroke="#16263F" stroke-width="1.4"/>
+            <!-- centered seal -->
+            <circle cx="230" cy="92" r="18" fill="#fff" stroke="#16335A" stroke-width="1.2"/>
+            <text x="230" y="97" text-anchor="middle" font-family="Fraunces,serif" font-size="13" font-weight="600" fill="#16335A">CA</text>
+            <text x="230" y="132" text-anchor="middle" font-family="Fraunces,serif" font-size="15" font-weight="600" fill="#16263F">CA Prompt Engineering</text>
+            <text x="230" y="150" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#54627A">By Samir Aggarwal</text>
+            <text x="230" y="172" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="#54627A">Indian CA drafting assistant with 2025 Act/Rules checks.</text>
+            <!-- four starter cards -->
+            <g font-family="Inter,sans-serif" font-size="8.5" fill="#16263F">
+              <g transform="translate(58,196)"><rect width="76" height="46" rx="7" fill="#fff" stroke="#D9CFB3"/><text x="9" y="20">Map old</text><text x="9" y="33">section to</text><text x="9" y="44" fill="#54627A">new Act</text></g>
+              <g transform="translate(142,196)"><rect width="76" height="46" rx="7" fill="#fff" stroke="#D9CFB3"/><text x="9" y="20">Explain new</text><text x="9" y="33">rule for this</text><text x="9" y="44" fill="#54627A">compliance</text></g>
+              <g transform="translate(226,196)"><rect width="76" height="46" rx="7" fill="#fff" stroke="#D9CFB3"/><text x="9" y="20">Draft client</text><text x="9" y="33">checklist TY</text><text x="9" y="44" fill="#54627A">2026-27</text></g>
+              <g transform="translate(310,196)"><rect width="76" height="46" rx="7" fill="#fff" stroke="#D9CFB3"/><text x="9" y="20">Compare</text><text x="9" y="33">1961 Act vs</text><text x="9" y="44" fill="#54627A">2025 Act</text></g>
+            </g>
+            <!-- message box -->
+            <rect x="58" y="300" width="328" height="34" rx="17" fill="#fff" stroke="#D9CFB3"/>
+            <text x="74" y="321" font-family="Inter,sans-serif" font-size="9" fill="#9aa3b0">Type a task, or paste a notice...</text>
+            <circle cx="368" cy="317" r="11" fill="#16335A"/><path d="M364 317h8M369 313l4 4-4 4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- callout pins -->
+            <g font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600">
+              <g><circle cx="208" cy="44" r="11" fill="#C8A24A"/><text x="208" y="48" text-anchor="middle" fill="#06121F">1</text></g>
+              <g><circle cx="230" cy="68" r="11" fill="#C8A24A"/><text x="230" y="72" text-anchor="middle" fill="#06121F">2</text></g>
+              <g><circle cx="372" cy="219" r="11" fill="#C8A24A"/><text x="372" y="223" text-anchor="middle" fill="#06121F">3</text></g>
+              <g><circle cx="402" cy="317" r="11" fill="#C8A24A"/><text x="402" y="321" text-anchor="middle" fill="#06121F">4</text></g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">02</text></svg>
+          <span class="label">Navigation</span>
+        </div>
+        <h2 class="ch-title">Reading the landing screen.</h2>
+        <p class="ch-lead">Open the link shared with you, or find CA Prompt Engineering in your ChatGPT sidebar under GPTs. Four things on the screen are all you need.</p>
+        <ul class="steps">
+          <li><span class="step-no">1</span><div class="step-bd"><b>GPT name and dropdown</b><span>Top left. The arrow next to the name opens settings, the share link and edit options. Admins use Edit GPT, everyone uses Copy link to share.</span></div></li>
+          <li><span class="step-no">2</span><div class="step-bd"><b>Title, byline and description</b><span>Confirms you are in the right tool, built by CA Samir Aggarwal, tuned for the 1961 to 2025 transition.</span></div></li>
+          <li><span class="step-no">3</span><div class="step-bd"><b>Four conversation starters</b><span>The fastest start. Tap one instead of typing: map a section, explain a rule, draft a checklist, or compare the two Acts.</span></div></li>
+          <li><span class="step-no">4</span><div class="step-bd"><b>The message box</b><span>Type any task in plain words, or paste a notice straight in. Press send and the assistant takes over.</span></div></li>
+        </ul>
+        <p class="keyline"><b>Fastest start:</b> tap a starter. Each one launches a complete CA workflow without a single typed word.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 FOUR-STEP METHOD ============ -->
+  <section class="chapter" id="method">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- FOUR STEP FLOW -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="The four step working method">
+            <defs><linearGradient id="flowg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7C871"/><stop offset="1" stop-color="#9C7A2E"/></linearGradient></defs>
+            <!-- connector spine -->
+            <path d="M70 56 V330" stroke="rgba(200,162,74,.35)" stroke-width="2" stroke-dasharray="2 6"/>
+            <g font-family="Inter,sans-serif">
+              <!-- step blocks -->
+              <g transform="translate(54,40)">
+                <circle cx="16" cy="16" r="16" fill="url(#flowg)"/><text x="16" y="21" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="600" fill="#06121F">1</text>
+                <rect x="46" y="-2" width="350" height="58" rx="11" fill="rgba(200,162,74,.06)" stroke="rgba(200,162,74,.3)"/>
+                <text x="64" y="20" font-size="12.5" font-weight="600" fill="#ECF1F8">State the task plainly</text>
+                <text x="64" y="40" font-size="10" fill="#9DB0CB">"Reply to a 143(1) notice", "old vs new regime", or paste a notice.</text>
+              </g>
+              <g transform="translate(54,118)">
+                <circle cx="16" cy="16" r="16" fill="url(#flowg)"/><text x="16" y="21" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="600" fill="#06121F">2</text>
+                <rect x="46" y="-2" width="350" height="58" rx="11" fill="rgba(200,162,74,.06)" stroke="rgba(200,162,74,.3)"/>
+                <text x="64" y="20" font-size="12.5" font-weight="600" fill="#ECF1F8">Answer the quick menu</text>
+                <text x="64" y="40" font-size="10" fill="#9DB0CB">It asks 2 to 3 numbered questions. Reply with numbers: 2, 1, 1.</text>
+              </g>
+              <g transform="translate(54,196)">
+                <circle cx="16" cy="16" r="16" fill="url(#flowg)"/><text x="16" y="21" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="600" fill="#06121F">3</text>
+                <rect x="46" y="-2" width="350" height="58" rx="11" fill="rgba(200,162,74,.06)" stroke="rgba(200,162,74,.3)"/>
+                <text x="64" y="20" font-size="12.5" font-weight="600" fill="#ECF1F8">Take the draft</text>
+                <text x="64" y="40" font-size="10" fill="#9DB0CB">Full output, with assumptions used and a verify-list attached.</text>
+              </g>
+              <g transform="translate(54,274)">
+                <circle cx="16" cy="16" r="16" fill="url(#flowg)"/><text x="16" y="21" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="600" fill="#06121F">4</text>
+                <rect x="46" y="-2" width="350" height="58" rx="11" fill="rgba(200,162,74,.06)" stroke="rgba(200,162,74,.3)"/>
+                <text x="64" y="20" font-size="12.5" font-weight="600" fill="#ECF1F8">Refine or chain</text>
+                <text x="64" y="40" font-size="10" fill="#9DB0CB">Ask for shorter, Hindi, WhatsApp, or run the next prompt.</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">03</text></svg>
+          <span class="label">How to use</span>
+        </div>
+        <h2 class="ch-title">Four steps to a usable draft.</h2>
+        <p class="ch-lead">You never write a prompt. You describe the job, answer a short numbered menu, and collect a finished draft. The whole loop takes under a minute.</p>
+        <p class="keyline">The menu is the trick that saves typing. When the assistant asks:</p>
+        <div class="paper">
+          <h4>Q1. Client type?</h4>
+          <div class="row"><span>1. Salaried &nbsp; 2. Business &nbsp; 3. NRI</span><b>&nbsp;</b></div>
+          <h4 style="margin-top:14px;">Q2. Assessment year?</h4>
+          <div class="row"><span>1. AY 2025-26 &nbsp; 2. AY 2024-25</span><b>&nbsp;</b></div>
+          <div class="row" style="border-top:1px solid var(--paper-line);margin-top:8px;padding-top:12px;"><span>Your reply</span><b style="font-family:'IBM Plex Mono',monospace;color:#9C7A2E;">1, 1</b></div>
+        </div>
+        <p class="keyline" style="margin-top:22px;">If you give partial detail, the assistant fills the rest with sensible defaults and <b>tells you what it assumed</b>, so you can correct it in one line.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 HOW TO ASK (PROMPT STRUCTURE PLAIN) ============ -->
+  <section class="chapter flip" id="ask">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- RAW THOUGHT TO STRUCTURED ASK -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="A plain request reshaped into a clear structured ask">
+            <defs>
+              <linearGradient id="lens" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E7C871"/><stop offset="1" stop-color="#9C7A2E"/></linearGradient>
+              <linearGradient id="g-paper2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F2"/><stop offset="1" stop-color="#EBE4D2"/></linearGradient>
+            </defs>
+            <!-- messy thought -->
+            <g transform="translate(36,118)">
+              <text x="0" y="-22" font-family="IBM Plex Mono,monospace" font-size="9" fill="#6E83A2">YOUR RAW THOUGHT</text>
+              <path d="M0 20 q20 -22 50 -8 q30 -22 60 0 q24 -18 40 6 q22 18 -4 30 q14 26 -30 22 q-30 22 -64 4 q-30 12 -52 -16 q-18 -22 8 -36 q-22 -22 28 -26 z" fill="rgba(200,162,74,.05)" stroke="rgba(157,176,203,.5)" stroke-width="1"/>
+              <text x="62" y="24" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#9DB0CB">help with</text>
+              <text x="62" y="40" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#9DB0CB">that notice</text>
+              <text x="62" y="56" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#9DB0CB">for my client?</text>
+            </g>
+            <!-- arrow + lens -->
+            <g transform="translate(196,138)">
+              <rect x="0" y="-26" width="58" height="52" rx="26" fill="rgba(200,162,74,.1)" stroke="url(#lens)" stroke-width="2"/>
+              <text x="29" y="4" text-anchor="middle" font-family="Fraunces,serif" font-size="14" font-weight="600" fill="#E7C871">CA</text>
+              <path d="M62 0 h26" stroke="#C8A24A" stroke-width="2" marker-end="url(#ar)"/>
+              <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#C8A24A"/></marker></defs>
+            </g>
+            <!-- structured card -->
+            <g transform="translate(286,72)">
+              <text x="0" y="-12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9C7A2E">CLEAR ASK</text>
+              <rect width="138" height="170" rx="12" fill="url(#g-paper2)" stroke="#9C7A2E"/>
+              <g font-family="Inter,sans-serif" font-size="9.5">
+                <text x="14" y="28" font-weight="600" fill="#9C7A2E">WHO</text><text x="14" y="42" fill="#16263F">Salaried client</text>
+                <line x1="14" y1="52" x2="124" y2="52" stroke="#D9CFB3"/>
+                <text x="14" y="72" font-weight="600" fill="#9C7A2E">WHAT</text><text x="14" y="86" fill="#16263F">Reply to a notice</text>
+                <line x1="14" y1="96" x2="124" y2="96" stroke="#D9CFB3"/>
+                <text x="14" y="116" font-weight="600" fill="#9C7A2E">WHICH PERIOD</text><text x="14" y="130" fill="#16263F">AY 2025-26</text>
+                <line x1="14" y1="140" x2="124" y2="140" stroke="#D9CFB3"/>
+                <text x="14" y="160" font-weight="600" fill="#9C7A2E">FOR WHOM</text><text x="69" y="160" fill="#16263F">Client email</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">04</text></svg>
+          <span class="label">How to ask</span>
+        </div>
+        <h2 class="ch-title">Prompt structure, in plain words.</h2>
+        <p class="ch-lead">There is no prompt syntax to memorise. The assistant builds the formal structure internally. You only need to keep four plain answers in mind, and the menu pulls most of them out of you anyway.</p>
+        <ul class="steps">
+          <li><span class="step-no">W</span><div class="step-bd"><b>Who is it for</b><span>Salaried, business, NRI, the company, or yourself.</span></div></li>
+          <li><span class="step-no">W</span><div class="step-bd"><b>What is the job</b><span>A reply, a checklist, a comparison, an engagement letter.</span></div></li>
+          <li><span class="step-no">P</span><div class="step-bd"><b>Which period</b><span>The AY, FY or quarter, if it matters. If you skip it, AY 2025-26 is assumed.</span></div></li>
+          <li><span class="step-no">F</span><div class="step-bd"><b>Final form</b><span>Email, WhatsApp, file note, or checklist. Ask later if unsure.</span></div></li>
+        </ul>
+        <div class="typeblk">
+          <div class="tt">Vague, still works</div>
+          <div class="typeline"><code>help me with my client's tax notice</code><button class="copy" data-c="help me with my client's tax notice">Copy</button></div>
+        </div>
+        <div class="typeblk">
+          <div class="tt">Clear, works better</div>
+          <div class="typeline"><code>draft a reply to a 143(1) notice, salaried client, AY 2025-26</code><button class="copy" data-c="draft a reply to a 143(1) notice, salaried client, AY 2025-26">Copy</button></div>
+        </div>
+        <p class="keyline">Either way you land in the same place. A vague line just means the assistant asks one or two more questions before it drafts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 DOCUMENT INTELLIGENCE ============ -->
+  <section class="chapter" id="diagnose">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- PASTE NOTICE -> DIAGNOSIS -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="A pasted notice scanned and diagnosed into routed facts">
+            <defs><linearGradient id="g-paper3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F2"/><stop offset="1" stop-color="#ECE5D3"/></linearGradient></defs>
+            <!-- notice doc -->
+            <g transform="translate(40,52)">
+              <rect width="150" height="200" rx="8" fill="url(#g-paper3)" stroke="#9C7A2E"/>
+              <text x="16" y="30" font-family="Inter,sans-serif" font-size="9" font-weight="600" fill="#16263F">INCOME TAX DEPT</text>
+              <line x1="16" y1="40" x2="134" y2="40" stroke="#D9CFB3"/>
+              <g stroke="#C4BBA0" stroke-width="5" stroke-linecap="round">
+                <line x1="16" y1="58" x2="120" y2="58"/><line x1="16" y1="74" x2="134" y2="74"/>
+                <line x1="16" y1="90" x2="100" y2="90"/><line x1="16" y1="120" x2="134" y2="120"/>
+                <line x1="16" y1="136" x2="116" y2="136"/><line x1="16" y1="166" x2="128" y2="166"/>
+              </g>
+              <!-- scan beam -->
+              <rect x="6" y="98" width="138" height="14" fill="rgba(200,162,74,.28)"/>
+              <line x1="6" y1="105" x2="144" y2="105" stroke="#E7C871" stroke-width="1.5"/>
+            </g>
+            <!-- arrow -->
+            <path d="M200 152 h26" stroke="#C8A24A" stroke-width="2" marker-end="url(#ar2)"/>
+            <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#C8A24A"/></marker></defs>
+            <!-- diagnosis chips -->
+            <g transform="translate(238,56)" font-family="IBM Plex Mono,monospace" font-size="9.5">
+              <g><rect width="184" height="34" rx="9" fill="rgba(200,162,74,.08)" stroke="rgba(200,162,74,.4)"/><text x="14" y="15" fill="#9DB0CB">SECTION</text><text x="14" y="28" fill="#ECF1F8" font-weight="600">143(1) Intimation</text></g>
+              <g transform="translate(0,44)"><rect width="184" height="34" rx="9" fill="rgba(200,162,74,.08)" stroke="rgba(200,162,74,.4)"/><text x="14" y="15" fill="#9DB0CB">DEMAND</text><text x="14" y="28" fill="#ECF1F8" font-weight="600">Rs 48,210</text></g>
+              <g transform="translate(0,88)"><rect width="184" height="34" rx="9" fill="rgba(180,98,46,.14)" stroke="rgba(180,98,46,.6)"/><text x="14" y="15" fill="#E0A77E">DEADLINE</text><text x="14" y="28" fill="#F6D8C2" font-weight="600">9 days &middot; act now</text></g>
+              <g transform="translate(0,132)"><rect width="184" height="34" rx="9" fill="rgba(231,200,113,.14)" stroke="rgba(231,200,113,.6)"/><text x="14" y="15" fill="#9DB0CB">ROUTE TO</text><text x="14" y="28" fill="#E7C871" font-weight="600">ADV-3 &middot; pre-filled</text></g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">05</text></svg>
+          <span class="label">Document intelligence</span>
+        </div>
+        <h2 class="ch-title">Paste a notice. It reads it for you.</h2>
+        <p class="ch-lead">Drop the text of any notice, letter or order straight into the box. Before doing anything else, the assistant reads it and tells you what it is.</p>
+        <ul class="steps">
+          <li><span class="step-no">A</span><div class="step-bd"><b>Identifies the type</b><span>Income tax section (143(1), 148/148A, 142(1), 245, 139(9), 133(6)) or GST form (DRC-01, ASMT-10, ADT-02, SCN 73/74).</span></div></li>
+          <li><span class="step-no">B</span><div class="step-bd"><b>Extracts the facts</b><span>Section or form, demand amount, response deadline, AY or period, and issuing ward where shown.</span></div></li>
+          <li><span class="step-no">C</span><div class="step-bd"><b>Routes and pre-fills</b><span>Sends you to the right prompt with the extracted facts already filled in.</span></div></li>
+        </ul>
+        <p class="keyline"><b>Deadline alert:</b> if the response is due within 15 days, it flags the count and recommends immediate action. Section 148 or 148A matters always carry a mandatory partner-review flag.</p>
+        <div class="typeblk">
+          <div class="tt">Type this, then paste</div>
+          <div class="typeline"><code>Diagnose [paste the notice text here]</code><button class="copy" data-c="Diagnose [paste the notice text here]">Copy</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 THE LIBRARY ============ -->
+  <section class="chapter flip" id="library">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- DOMAIN GRID -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="Ten practice domains holding 114 prompts">
+            <text x="230" y="40" text-anchor="middle" font-family="Fraunces,serif" font-size="15" font-weight="600" fill="#ECF1F8">10 domains &middot; one library</text>
+            <g font-family="IBM Plex Mono,monospace">
+              <!-- row 1 -->
+              <g transform="translate(40,64)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">ITR</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">11 prompts</text></g>
+              <g transform="translate(170,64)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">GST</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">12 prompts</text></g>
+              <g transform="translate(300,64)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">TDS</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">12 prompts</text></g>
+              <!-- row 2 -->
+              <g transform="translate(40,134)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">MCA</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">11 prompts</text></g>
+              <g transform="translate(170,134)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">ACC</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">9 prompts</text></g>
+              <g transform="translate(300,134)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">AUD</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">11 prompts</text></g>
+              <!-- row 3 -->
+              <g transform="translate(40,204)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">ADV</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">16 prompts</text></g>
+              <g transform="translate(170,204)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">COM</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">15 prompts</text></g>
+              <g transform="translate(300,204)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">FIN</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">7 prompts</text></g>
+              <!-- row 4 center: QC + total -->
+              <g transform="translate(105,274)"><rect width="120" height="62" rx="10" fill="rgba(200,162,74,.07)" stroke="rgba(200,162,74,.32)"/><text x="60" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#E7C871">QC</text><text x="60" y="46" text-anchor="middle" font-size="8.5" fill="#9DB0CB">10 prompts</text></g>
+              <g transform="translate(235,274)"><rect width="120" height="62" rx="10" fill="url(#flowg2)" stroke="#E7C871"/><text x="60" y="30" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#06121F">114</text><text x="60" y="48" text-anchor="middle" font-size="8.5" fill="#3a2f10">total prompts</text></g>
+            </g>
+            <defs><linearGradient id="flowg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7C871"/><stop offset="1" stop-color="#C8A24A"/></linearGradient></defs>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">06</text></svg>
+          <span class="label">The library</span>
+        </div>
+        <h2 class="ch-title">114 prompts, and the commands to reach them.</h2>
+        <p class="ch-lead">You will rarely name a prompt by ID. The assistant matches your task automatically. But these commands let you drive directly when you want to.</p>
+        <div class="cmd">
+          <div class="cmd-row"><code>Show GST</code><span>List every prompt in a domain with its one-line trigger.</span></div>
+          <div class="cmd-row"><code>Use ITR-8</code><span>Jump straight to a prompt, here the old vs new regime comparison.</span></div>
+          <div class="cmd-row"><code>Which prompt for...</code><span>Describe a task and get the best-matching prompt named and explained.</span></div>
+          <div class="cmd-row"><code>Chain from AUD-2</code><span>See the full recommended sequence of prompts from that point.</span></div>
+          <div class="cmd-row"><code>Custom prompt for...</code><span>Build a fresh structure when no library prompt fits.</span></div>
+        </div>
+        <p class="keyline">After each output the assistant suggests the <b>logical next prompt</b> in the workflow, so a single task naturally chains into the next.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 READING THE REPORT ============ -->
+  <section class="chapter" id="report">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- ANNOTATED OUTPUT -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="The anatomy of a structured output">
+            <defs><linearGradient id="g-paper4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F2"/><stop offset="1" stop-color="#F0E9D8"/></linearGradient></defs>
+            <rect x="86" y="18" width="288" height="344" rx="12" fill="url(#g-paper4)" stroke="#9C7A2E"/>
+            <!-- header band -->
+            <rect x="86" y="18" width="288" height="34" rx="12" fill="#0E2138"/>
+            <rect x="86" y="40" width="288" height="12" fill="#0E2138"/>
+            <text x="104" y="40" font-family="Inter,sans-serif" font-size="9.5" font-weight="600" fill="#E7C871">Aggarwal Samir &amp; Co. &middot; CA Practice AI</text>
+            <!-- deliverable -->
+            <text x="104" y="78" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#16263F">Subject: Response to your AY 2025-26 notice</text>
+            <g stroke="#C4BBA0" stroke-width="4.5" stroke-linecap="round">
+              <line x1="104" y1="96" x2="350" y2="96"/><line x1="104" y1="110" x2="356" y2="110"/>
+              <line x1="104" y1="124" x2="330" y2="124"/><line x1="104" y1="138" x2="350" y2="138"/>
+            </g>
+            <!-- assumptions block -->
+            <rect x="104" y="158" width="252" height="52" rx="8" fill="rgba(200,162,74,.1)" stroke="#C8A24A"/>
+            <text x="116" y="176" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="#9C7A2E">ASSUMPTIONS MADE</text>
+            <g stroke="#C8A24A" stroke-width="3" stroke-linecap="round" opacity=".55"><line x1="116" y1="190" x2="320" y2="190"/><line x1="116" y1="200" x2="290" y2="200"/></g>
+            <!-- verify block -->
+            <rect x="104" y="220" width="252" height="52" rx="8" fill="rgba(180,98,46,.12)" stroke="#B4622E"/>
+            <text x="116" y="238" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="#B4622E">VERIFY BEFORE USE</text>
+            <g stroke="#B4622E" stroke-width="3" stroke-linecap="round" opacity=".5"><line x1="116" y1="252" x2="320" y2="252"/><line x1="116" y1="262" x2="300" y2="262"/></g>
+            <!-- what next -->
+            <rect x="104" y="282" width="252" height="58" rx="8" fill="#0E2138"/>
+            <text x="116" y="300" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="#E7C871">WHAT NEXT?</text>
+            <g font-family="Inter,sans-serif" font-size="8.5" fill="#9DB0CB">
+              <text x="116" y="316">1. Run QC-1 &middot; 2. WhatsApp version</text>
+              <text x="116" y="330">3. Next prompt &middot; 4. Refine</text>
+            </g>
+            <!-- side callout pins -->
+            <g font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600">
+              <g><circle cx="68" cy="35" r="11" fill="#C8A24A"/><text x="68" y="39" text-anchor="middle" fill="#06121F">A</text></g>
+              <g><circle cx="68" cy="110" r="11" fill="#C8A24A"/><text x="68" y="114" text-anchor="middle" fill="#06121F">B</text></g>
+              <g><circle cx="68" cy="184" r="11" fill="#C8A24A"/><text x="68" y="188" text-anchor="middle" fill="#06121F">C</text></g>
+              <g><circle cx="68" cy="246" r="11" fill="#B4622E"/><text x="68" y="250" text-anchor="middle" fill="#fff">D</text></g>
+              <g><circle cx="392" cy="311" r="11" fill="#C8A24A"/><text x="392" y="315" text-anchor="middle" fill="#06121F">E</text></g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">07</text></svg>
+          <span class="label">Reading the report</span>
+        </div>
+        <h2 class="ch-title">Every output, the same shape.</h2>
+        <p class="ch-lead">A structured CA report always lands in five zones, so you know where to look before you read a word.</p>
+        <ul class="steps">
+          <li><span class="step-no">A</span><div class="step-bd"><b>Firm header</b><span>Confirms the output is from your branded assistant, ready for the file.</span></div></li>
+          <li><span class="step-no">B</span><div class="step-bd"><b>The deliverable</b><span>The actual email, checklist, note or table, copy-ready. Client text carries no jargon, internal text uses CA terminology.</span></div></li>
+          <li><span class="step-no">C</span><div class="step-bd"><b>Assumptions made</b><span>Every default it used, including the AY and FY, so nothing is hidden.</span></div></li>
+          <li><span class="step-no">D</span><div class="step-bd"><b>Verify before use</b><span>The rates, thresholds, due dates and section refs to confirm against official sources. This is your sign-off list.</span></div></li>
+          <li><span class="step-no">E</span><div class="step-bd"><b>What next</b><span>Three or four next actions, including a one-tap QC-1 and the logical next prompt.</span></div></li>
+        </ul>
+        <p class="keyline"><b>The report is a draft, never a filing.</b> You verify the flagged items, apply your judgement, and deliver. The assistant supports the work, it does not sign it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 08 CONTROL + COMMANDS ============ -->
+  <section class="chapter flip" id="control">
+    <div class="ch-grid">
+      <div class="ch-art rv">
+        <div class="art-frame">
+          <!-- SHIELD -->
+          <svg viewBox="0 0 460 380" role="img" aria-label="You stay in professional control">
+            <defs><linearGradient id="shield" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#173458"/><stop offset="1" stop-color="#0A1A2F"/></linearGradient></defs>
+            <path d="M230 44 L344 84 V192 C344 268 296 312 230 340 C164 312 116 268 116 192 V84 Z" fill="url(#shield)" stroke="#C8A24A" stroke-width="2"/>
+            <path d="M230 60 L328 95 V190 C328 256 288 296 230 322 C172 296 132 256 132 190 V95 Z" fill="none" stroke="rgba(200,162,74,.35)" stroke-width="1"/>
+            <path d="M188 192 l30 30 58 -66" fill="none" stroke="#E7C871" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="230" y="270" text-anchor="middle" font-family="Fraunces,serif" font-size="15" font-weight="600" fill="#ECF1F8">You review.</text>
+            <text x="230" y="292" text-anchor="middle" font-family="Fraunces,serif" font-size="15" font-weight="600" fill="#E7C871">You decide.</text>
+            <!-- corner labels -->
+            <g font-family="IBM Plex Mono,monospace" font-size="9" fill="#9DB0CB">
+              <text x="40" y="120">no UDIN</text>
+              <text x="356" y="120">no filing</text>
+              <text x="40" y="300">no portals</text>
+              <text x="340" y="300">no final opinion</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ch-num">
+          <svg class="numseal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="none" stroke="#C8A24A" stroke-width="1.3"/><text x="26" y="33" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="600" fill="#E7C871">08</text></svg>
+          <span class="label">Your control &amp; quick commands</span>
+        </div>
+        <h2 class="ch-title">It does the heavy lifting. You keep the judgement.</h2>
+        <p class="ch-lead">The assistant has firm boundaries by design. Inside those boundaries, one-word commands reshape any output instantly.</p>
+        <div class="cmd">
+          <div class="cmd-row"><code>WhatsApp</code><span>Convert the last client output to a message under 200 words.</span></div>
+          <div class="cmd-row"><code>Hindi</code><span>Translate the client-facing text to Hindi.</span></div>
+          <div class="cmd-row"><code>Shorter</code><span>Compress the last output by about 40 percent, structure intact.</span></div>
+          <div class="cmd-row"><code>More formal</code><span>Raise the register of the last output.</span></div>
+          <div class="cmd-row"><code>Run QC-1</code><span>Seven Verifications on the last output before you sign off.</span></div>
+          <div class="cmd-row"><code>Summary</code><span>A full session log: prompts used, outputs ready, pending items.</span></div>
+        </div>
+        <p class="keyline">It will not file returns, touch a portal, issue a UDIN or certificate, or give a final legal position. Those stay with you, the practitioner.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final">
+  <div class="wrap rv">
+    <span class="eyebrow" style="justify-content:center;">Your first five minutes</span>
+    <h2>Open it, paste a notice, watch it work.</h2>
+    <p>Three moves are enough to feel the difference on a live task.</p>
+    <div class="quickstart">
+      <div class="qs"><b><i>1</i> Open the GPT</b><span>Use the shared link, or find CA Prompt Engineering in your ChatGPT sidebar under GPTs.</span></div>
+      <div class="qs"><b><i>2</i> Paste a real notice</b><span>Drop in a 143(1) or GST notice. Watch the diagnosis, deadline flag and routing appear.</span></div>
+      <div class="qs"><b><i>3</i> Take the draft</b><span>Collect the reply pack, run QC-1, ask for a WhatsApp version, then deliver.</span></div>
+    </div>
+    <a class="cta" href="https://chatgpt.com/g/g-6a2d9243b104819187c16daf5be738c2-ca-prompt-engineering" target="_blank" rel="noopener" style="font-size:.95rem;padding:14px 26px;">
+      Open CA Prompt Engineering
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-in">
+      <div class="fb">
+        <svg class="seal" viewBox="0 0 48 48" aria-hidden="true" style="width:46px;height:46px;"><circle cx="24" cy="24" r="22" fill="none" stroke="#C8A24A" stroke-width="1.4"/><circle cx="24" cy="24" r="17" fill="none" stroke="rgba(200,162,74,.45)" stroke-width="1"/><text x="24" y="29" text-anchor="middle" font-family="Fraunces,serif" font-size="15" font-weight="600" fill="#E7C871">CA</text></svg>
+        <small><b style="color:var(--ink);font-weight:600;">Aggarwal Samir &amp; Co.</b>, Chartered Accountants<br>CA Practice AI Assistant &middot; Powered by the AI Prompts Handbook for CAs</small>
+      </div>
+      <small style="text-align:right;">
+        CA Samir Aggarwal &middot; <a href="https://www.linkedin.com/in/samir-aggarwal-3713998" target="_blank" rel="noopener">LinkedIn</a><br>
+        NexAssure AI
+      </small>
+    </div>
+    <p class="disclaim">Use responsibly. All outputs are structured drafts. Verify all rates, thresholds, due dates and section references against official sources (Income Tax Act, GST Act, MCA portal, ICAI circulars) before professional use. The assistant supports, it does not replace, the practitioner's judgement. Nothing it produces is legal advice or a UDIN-ready certificate.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click', function(){
+      var t = b.getAttribute('data-c') || '';
+      navigator.clipboard && navigator.clipboard.writeText(t);
+      var toast = document.getElementById('toast');
+      toast.textContent = 'Copied to clipboard';
+      toast.classList.add('show');
+      clearTimeout(window.__tt);
+      window.__tt = setTimeout(function(){ toast.classList.remove('show'); }, 1600);
+    });
+  });
+
+  // scroll reveal
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:.12 });
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>
